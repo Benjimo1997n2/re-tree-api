@@ -207,6 +207,7 @@
         ]
     },
     "Benjimo": {
+        "username": "Benjimo",
         "CO2": 100000,
         "CO2_per_sec": 1,
         "trees": [
