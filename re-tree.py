@@ -34,11 +34,9 @@ def create_user():
     if username in users:
         return jsonify({"status": "error", "message": "User already exists"}), 400
 
-    users[username] = {
-        "CO2": 0,
-        "CO2_per_sec": 0,
-        "trees": [],
-    }
+    users[username]["trees"] = json.loads(request.form["trees"])
+    users[username]["CO2"] = int(request.form["CO2"])
+    users[username]["CO2_per_sec"] = int(request.form["CO2_per_sec"])
     save_users(users)
     return jsonify({"status": "success", "message": "User created"}), 201
 
