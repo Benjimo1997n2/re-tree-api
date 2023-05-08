@@ -4,26 +4,7 @@ import json
 import os
 
 app = Flask(__name__)
-# CORS(app, origins=["http://127.0.0.1:5500", "http://localhost:5500"], supports_credentials=True)
-
-# CORS trick
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
-    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
-
-@app.route('/<path:path>', methods=['OPTIONS'])
-def options(path):
-    response = app.make_default_options_response()
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
-    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
-
+CORS(app)
 
 DATABASE_FILE = "users.json"
 
