@@ -3,11 +3,12 @@ from flask_cors import CORS
 import json
 import firebase_admin
 from firebase_admin import credentials, db
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-cred = credentials.Certificate('path/to/serviceAccountKey.json')  # replace with your Firebase service account key file path
+cred = credentials.Certificate(json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT').replace('\\n', '\n')))
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app/'  # replace with your Firebase database URL
 })
