@@ -1,16 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
-import firebase_admin
-from firebase_admin import credentials, db
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-cred = credentials.Certificate('path/to/serviceAccountKey.json')  # replace with your Firebase service account key file path
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app/'  # replace with your Firebase database URL
-})
+DATABASE_FILE = "users.json"
 
 @app.route('/')
 def index():
@@ -18,11 +14,17 @@ def index():
     return "<h1>Welcome to our re-tree-api!</h1>"
 
 def load_users():
-    return db.reference('users').get() or {}
+    if os.path.exists(DATABASE_FILE):
+        with open(DATABASE_FILE, "r") as f:
+            users = json.load(f)
+    else:
+        users = {}
+    return users
 
 
 def save_users(users):
-    db.reference('users').set(users)
+    with open(DATABASE_FILE, "w") as f:
+        json.dump(users, f, indent=4)
 
 
 @app.route("/create_user", methods=["POST"])
