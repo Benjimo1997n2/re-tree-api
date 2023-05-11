@@ -9,8 +9,8 @@ app = Flask(__name__)
 CORS(app)
 
 
-service_account = os.getenv("FIREBASE_SERVICE_ACCOUNT")
-cred = credentials.Certificate(json.loads(service_account))
+# service_account = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+cred = credentials.Certificate("re-tree-api-firebase-adminsdk-qjv99-1e27f18d10.json")
 
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app'
