@@ -10,13 +10,13 @@ CORS(app)
 
 cred = credentials.Certificate(json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT')))
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app'
+    'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
 @app.route('/')
 def index():
     # A welcome message to test our server
-    return "<h1>Welcome to our re-tree-api!</h1>"
+    return "<h1>Welcome to our re-tree-api!</h1> Documentation is comming soon!"
 
 def load_users():
     return db.reference('/').get() or {}
