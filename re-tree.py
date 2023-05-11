@@ -8,30 +8,70 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-cred = credentials.Certificate("re-tree-api-firebase-adminsdk-qjv99-1e27f18d10.json")
+cred = credentials.Certificate("re-tree-api-firebase-adminsdk-qjv99-e976296609.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://re-tree-api-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
-@app.route('/save_data', methods=['POST'])
-def save_data():
-    username = request.form.get('username')
-    trees = request.form.get('trees')
-    CO2 = request.form.get('CO2')
-    CO2_per_sec = request.form.get('CO2_per_sec')
+@app.route('/')
+def index():
+    # A welcome message to test our server
+    return "<h1>Welcome to our re-tree-api!</h1> Documentation is comming soon!"
 
-    # Save data to Firebase
-    data = {
-        "username": username,
-        "trees": trees,
-        "CO2": CO2,
-        "CO2_per_sec": CO2_per_sec
+def load_users():
+    return db.reference('/').get() or {}
+
+
+def save_users(users):
+    db.reference('/').set(users)
+
+
+@app.route("/create_user", methods=["POST"])
+def create_user():
+    print("request.form")
+    users = load_users()
+    username = request.form["username"]
+    if username in users:
+        return jsonify({"status": "error", "message": "User already exists"}), 400
+
+    users[username] = {
+        "CO2": int(request.form["CO2"]),
+        "CO2_per_sec": int(request.form["CO2_per_sec"]),
+        "trees": json.loads(request.form["trees"]),
     }
+    save_users(users)
+    return jsonify({"status": "success", "message": "User created"}), 201
 
-    ref = db.reference('users')
-    ref.child(username).set(data)
 
-    return jsonify({"message": "Data saved successfully"}), 200
+@app.route("/save_data", methods=["POST"])
+def save_data():
+    print("bkjnl")
+    users = load_users()
+    username = request.form["username"]
+
+    if username not in users:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    users[username]["trees"] = json.loads(request.form["trees"])
+    users[username]["CO2"] = int(request.form["CO2"])
+    users[username]["CO2_per_sec"] = int(request.form["CO2_per_sec"])
+    save_users(users)
+    return jsonify({"status": "success", "message": "User data saved"}), 200
+
+
+@app.route("/visit_user/<string:username>", methods=["GET"])
+def visit_user(username):
+    users = load_users()
+
+    if username not in users:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    return jsonify(users[username]), 200
+
+@app.route("/all_users", methods=["GET"])
+def all_users():
+    users = load_users()
+    return jsonify(users), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
